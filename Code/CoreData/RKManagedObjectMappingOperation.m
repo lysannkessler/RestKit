@@ -43,6 +43,29 @@
     return [RKObjectMappingOperation class];
 }
 
+- (NSArray*)_relationshipMappingsToApply {
+    // take the default set of relationships, and remove those that are connected relationships, 
+    // because they are not expected to appear in the JSON.
+    NSArray* allRelationships = [super _relationshipMappingsToApply];
+    NSDictionary* connectedRelationships = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+    
+    NSMutableArray* result = [[NSMutableArray alloc] initWithCapacity:allRelationships.count - connectedRelationships.count];
+
+    for (RKObjectRelationshipMapping* mapping in allRelationships) {
+        BOOL found = NO;
+        for (NSString* relationshipName in connectedRelationships) {
+            if ([mapping.sourceKeyPath isEqualToString:relationshipName]) {
+                found = YES;
+                break;
+            }
+        }
+        if (!found)
+            [result addObject:mapping];
+    }
+    
+    return [result autorelease];
+}
+
 - (void)connectRelationships {
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];

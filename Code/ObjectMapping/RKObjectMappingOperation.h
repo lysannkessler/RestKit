@@ -80,4 +80,10 @@
  */
 - (BOOL)performMapping:(NSError**)error;
 
+/**
+ The relationship mappings to apply in applyRelationshipMappings.
+ In the default implementation, this is the same as relationshipMappings.
+ */
+- (NSArray*)_relationshipMappingsToApply;
+
 @end

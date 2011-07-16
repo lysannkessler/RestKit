@@ -224,6 +224,10 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
+- (NSArray*)_relationshipMappingsToApply {
+    return [self relationshipMappings];
+}
+
 - (void)applyAttributeMapping:(RKObjectAttributeMapping*)attributeMapping withValue:(id)value {
     if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
         [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
@@ -313,7 +317,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     BOOL appliedMappings = NO;
     id destinationObject = nil;
     
-    for (RKObjectRelationshipMapping* mapping in [self relationshipMappings]) {
+    for (RKObjectRelationshipMapping* mapping in [self _relationshipMappingsToApply]) {
         id value = [self.sourceObject valueForKeyPath:mapping.sourceKeyPath];
         
         if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
